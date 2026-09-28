@@ -5,6 +5,7 @@ from app.core.database import engine, Base
 from app.api.v1.applicants import router as applicants_router
 from app.api.v1.watchlist import router as watchlist_router
 from app.api.v1.compliance import alerts_router, dashboard_router, audit_router
+from app.api.v1.workspace import router as workspace_router
 
 # Create DB tables on startup
 Base.metadata.create_all(bind=engine)
@@ -18,7 +19,7 @@ app = FastAPI(
 # CORS configuration for Next.js frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS.split(','),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +31,7 @@ app.include_router(watchlist_router, prefix=settings.API_V1_STR)
 app.include_router(alerts_router, prefix=settings.API_V1_STR)
 app.include_router(dashboard_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
+app.include_router(workspace_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

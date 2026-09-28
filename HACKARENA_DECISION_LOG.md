@@ -1,5 +1,17 @@
 # HACKARENA DECISION LOG
 
+## Frontend implementation — 28 September 2026
+
+- Added **Clear**, a white, minimal React + TypeScript + Vite interface using the existing FastAPI backend. The generic Next.js Markdown templates are reference material; the implemented frontend is in `src/`.
+- Scope: overview, searchable/filterable applications, three-step onboarding with an independent ID record, side-by-side identity comparison, watchlist management, officer decisions and audit history.
+- **Latest user requirement:** discrepancies and watchlist risk are separate columns. Identity mismatches, missing ID records and invalid ID formats never increase watchlist risk. Unsupported ID formats are explicitly marked for manual verification.
+- Watchlist risk now uses three levels: Low for no active match at 75% or higher, Medium for 75–<90%, High for ≥90%. Country is contextual evidence; it does not create a separate Critical rating. Dismissed false positives do not contribute to risk.
+- Supabase remains the intended PostgreSQL host. FastAPI connects through a server-only `DATABASE_URL`; the browser has no database credentials. The backend `.env` lookup now resolves to `backend/.env` correctly.
+- New frontend writes save onboarding data, screening outcomes and audit records in a transaction. Repeated screening reuses existing applicant/watchlist matches. New watchlist matches reopen reviewed applications; decisions remain in the audit history.
+- Local verification uses a disposable SQLite database and synthetic data. A live Supabase connection still requires the user's project credentials. See `README.md` for setup and scope.
+
+The older architecture and verification notes below are retained as project history; where they conflict, this section describes the current frontend workflow.
+
 ## Backend Architecture
 
 ### Decision: Use FastAPI for Backend Framework

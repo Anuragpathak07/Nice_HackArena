@@ -24,6 +24,9 @@ kyc_aml.db
 
 # Node / Frontend / Next.js
 node_modules/
+.venv/
+test-results/
+playwright-report/
 .next/
 out/
 build/

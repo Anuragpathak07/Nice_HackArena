@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
 # Explicitly load .env file from project root or backend folder
-env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
 load_dotenv(env_path)
 
 class Settings(BaseSettings):
@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     # Matching thresholds
     FUZZY_HIGH_THRESHOLD: float = 90.0
     FUZZY_MEDIUM_THRESHOLD: float = 75.0
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     class Config:
         env_file = ".env"

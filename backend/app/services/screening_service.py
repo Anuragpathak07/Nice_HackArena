@@ -1,100 +1,47 @@
-from typing import List, Dict, Any, Optional
-from datetime import datetime
 from sqlalchemy.orm import Session
 from app.models import Applicant, Watchlist, ScreeningResult, Alert, AuditLog
-from app.repositories import ApplicantRepository, WatchlistRepository, ScreeningRepository, AlertRepository, AuditRepository
 from app.services.matching_service import MatchingService
+from app.services.consistency_service import ConsistencyService
 from app.core.config import settings
 
+
 class ScreeningService:
+    """Shared, repeatable screening path. Risk is based only on watchlist evidence."""
     def __init__(self, db: Session):
         self.db = db
-        self.applicant_repo = ApplicantRepository(db)
-        self.watchlist_repo = WatchlistRepository(db)
-        self.screening_repo = ScreeningRepository(db)
-        self.alert_repo = AlertRepository(db)
-        self.audit_repo = AuditRepository(db)
 
-    def screen_applicant(self, application_id: str) -> List[ScreeningResult]:
-        applicant = self.applicant_repo.get_by_id(application_id)
+    def screen_applicant(self, application_id: str, commit: bool = True):
+        applicant = self.db.get(Applicant, application_id)
         if not applicant:
-            raise ValueError(f"Applicant {application_id} not found")
-
-        watchlist_entries = self.watchlist_repo.get_all(limit=1000)
-        screening_results = []
-        highest_risk = "LOW"
-        highest_score = 0.0
-
-        for entry in watchlist_entries:
-            score, match_type, reason = MatchingService.calculate_similarity(
-                applicant_name=applicant.full_name,
-                watchlist_name=entry.name,
-                applicant_country=applicant.country,
-                watchlist_country=entry.country
-            )
-
-            if score >= settings.FUZZY_MEDIUM_THRESHOLD:
-                # Determine risk level based on score & country match
-                if score >= settings.FUZZY_HIGH_THRESHOLD or match_type in ["EXACT", "NORMALIZED"]:
-                    risk_level = "HIGH" if not (entry.country and entry.country.lower() == applicant.country.lower()) else "CRITICAL"
-                else:
-                    risk_level = "MEDIUM"
-
-                full_reason = f"{reason}. Watchlist Reason: {entry.reason}"
-
-                screening_data = {
-                    "application_id": applicant.application_id,
-                    "watchlist_id": entry.watchlist_id,
-                    "match_score": score,
-                    "match_type": match_type,
-                    "risk_level": risk_level,
-                    "reason": full_reason,
-                    "review_status": "PENDING_REVIEW"
-                }
-
-                result = self.screening_repo.create(screening_data)
-                screening_results.append(result)
-
-                # Track highest risk
-                if risk_level == "CRITICAL" or (risk_level == "HIGH" and highest_risk != "CRITICAL"):
-                    highest_risk = risk_level
-                elif risk_level == "MEDIUM" and highest_risk not in ["HIGH", "CRITICAL"]:
-                    highest_risk = "MEDIUM"
-
-                if score > highest_score:
-                    highest_score = score
-
-                # Create Compliance Alert
-                self.alert_repo.create({
-                    "application_id": applicant.application_id,
-                    "screening_id": result.screening_id,
-                    "alert_type": "NEW_APPLICATION_MATCH",
-                    "status": "OPEN"
-                })
-
-        # Update applicant risk level and status
-        if screening_results:
-            new_status = "IN_REVIEW"
-            self.applicant_repo.update(applicant.application_id, {"status": new_status, "risk_level": highest_risk})
-            
-            # Log Audit Event
-            self.audit_repo.create({
-                "application_id": applicant.application_id,
-                "action": "AUTOMATED_SCREENING_MATCH_DETECTED",
-                "old_status": applicant.status,
-                "new_status": new_status,
-                "performed_by": "SYSTEM_SCREENING_ENGINE",
-                "reason": f"Automated screening found {len(screening_results)} potential watchlist match(es). Highest Score: {highest_score:.1f}%"
-            })
-        else:
-            # No match
-            self.audit_repo.create({
-                "application_id": applicant.application_id,
-                "action": "AUTOMATED_SCREENING_CLEARED",
-                "old_status": applicant.status,
-                "new_status": applicant.status,
-                "performed_by": "SYSTEM_SCREENING_ENGINE",
-                "reason": "Screened against active watchlist. No matches found."
-            })
-
-        return screening_results
+            raise ValueError(f'Applicant {application_id} not found')
+        old_status = applicant.status
+        results = []
+        new_matches = 0
+        for entry in self.db.query(Watchlist).all():
+            score, match_type, reason = MatchingService.calculate_similarity(applicant.full_name, entry.name, applicant.country, entry.country)
+            if score < settings.FUZZY_MEDIUM_THRESHOLD:
+                continue
+            existing = self.db.query(ScreeningResult).filter_by(application_id=application_id, watchlist_id=entry.watchlist_id).first()
+            if existing:
+                results.append(existing)
+                continue
+            result = ScreeningResult(application_id=application_id, watchlist_id=entry.watchlist_id,
+                match_score=score, match_type=match_type, risk_level='HIGH' if score >= settings.FUZZY_HIGH_THRESHOLD else 'MEDIUM',
+                reason=f'{reason}. Watchlist reason: {entry.reason}', review_status='PENDING_REVIEW')
+            self.db.add(result)
+            self.db.flush()
+            self.db.add(Alert(application_id=application_id, screening_id=result.screening_id, alert_type='WATCHLIST_MATCH', status='OPEN'))
+            results.append(result)
+            new_matches += 1
+        self.db.flush()
+        active = [r for r in results if r.review_status not in ('DISMISSED', 'FALSE_POSITIVE')]
+        applicant.risk_level = 'HIGH' if any(r.match_score >= settings.FUZZY_HIGH_THRESHOLD for r in active) else 'MEDIUM' if active else 'LOW'
+        consistent = ConsistencyService.verify_consistency(applicant, applicant.id_records[0] if applicant.id_records else None)
+        if new_matches or (applicant.status == 'PENDING' and not consistent.passed):
+            applicant.status = 'IN_REVIEW'
+        self.db.add(AuditLog(application_id=application_id, action='SCREENING_COMPLETED', old_status=old_status,
+            new_status=applicant.status, performed_by='Screening engine',
+            reason=f'{new_matches} new watchlist match(es). Watchlist risk: {applicant.risk_level}. Identity findings are assessed separately.'))
+        if commit:
+            self.db.commit()
+        return results
