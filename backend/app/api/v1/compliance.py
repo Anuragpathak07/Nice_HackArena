@@ -277,15 +277,74 @@ def trigger_impact_analysis(watchlist_id: str, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+@impact_router.get("/watchlist/{watchlist_id}/impact-analysis", response_model=ImpactAnalysisDetailResponse)
+def get_watchlist_impact_analysis(watchlist_id: str, db: Session = Depends(get_db)):
+    from app.repositories import ImpactRepository
+    repo = ImpactRepository(db)
+    service = ImpactService(db)
+    
+    analysis = repo.get_analysis_by_watchlist_and_event(watchlist_id, "WATCHLIST_ADDED") or \
+               repo.get_analysis_by_watchlist_and_event(watchlist_id, "WATCHLIST_MANUAL_TRIGGER")
+    
+    if not analysis:
+        try:
+            analysis = service.run_impact_analysis(watchlist_id, event_type="WATCHLIST_ADDED")
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+
+    results = repo.get_results_by_analysis_id(analysis.analysis_id)
+    formatted_results = []
+    for r in results:
+        formatted_results.append({
+            "impact_result_id": r.impact_result_id,
+            "application_id": r.application_id,
+            "screening_id": r.screening_id,
+            "before": {
+                "risk_level": r.before_risk_level,
+                "watchlist_status": r.before_watchlist_status,
+                "status": r.before_status
+            },
+            "after": {
+                "risk_level": r.after_risk_level,
+                "watchlist_status": r.after_watchlist_status,
+                "status": r.after_status
+            },
+            "risk_change": r.risk_change,
+            "match_score": r.match_score,
+            "recommended_action": r.recommended_action,
+            "reason": r.reason
+        })
+
+    return ImpactAnalysisDetailResponse(
+        analysis_id=analysis.analysis_id,
+        watchlist_id=analysis.watchlist_id,
+        event_type=analysis.event_type,
+        customers_scanned=analysis.customers_scanned,
+        potential_matches=analysis.potential_matches,
+        high_confidence_matches=analysis.high_confidence_matches,
+        review_required=analysis.review_required,
+        analysis_status=analysis.analysis_status,
+        created_at=analysis.created_at,
+        results=formatted_results
+    )
+
 @impact_router.get("/impact-analysis/{analysis_id}", response_model=ImpactAnalysisDetailResponse)
 def get_impact_analysis_detail(analysis_id: str, db: Session = Depends(get_db)):
     from app.repositories import ImpactRepository
     repo = ImpactRepository(db)
+    service = ImpactService(db)
+    
     analysis = repo.get_analysis_by_id(analysis_id)
     if not analysis:
-        raise HTTPException(status_code=404, detail=f"Impact Analysis {analysis_id} not found")
-    
-    results = repo.get_results_by_analysis_id(analysis_id)
+        analysis = repo.get_analysis_by_watchlist_and_event(analysis_id, "WATCHLIST_ADDED") or \
+                   repo.get_analysis_by_watchlist_and_event(analysis_id, "WATCHLIST_MANUAL_TRIGGER")
+        if not analysis:
+            try:
+                analysis = service.run_impact_analysis(analysis_id, event_type="WATCHLIST_ADDED")
+            except Exception:
+                raise HTTPException(status_code=404, detail=f"Impact Analysis {analysis_id} not found")
+
+    results = repo.get_results_by_analysis_id(analysis.analysis_id)
     formatted_results = []
     for r in results:
         formatted_results.append({
