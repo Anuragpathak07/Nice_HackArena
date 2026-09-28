@@ -1,0 +1,101 @@
+﻿applicant_id,full_name,dob,address,id_number,occupation,annual_income,country
+APP0001,Layla Qureshi,2000-02-12,"287 Al Wasl Street, Sharjah, Sharjah",784-2000-1000520-0,Bank Manager,36000,United Arab Emirates
+APP0002,Xin Tan,2003-03-27,"102 Bukit Timah Road, Singapore, 733057",S0303048T,Teacher,41100,Singapore
+APP0003,Beatriz Oliveira,1956-04-27,"315 Avenida Brasil, Sao Paulo, SP 01344766",047.139.360-55,Import/Export Dealer,399800,Brazil
+APP0004,Gaurav Bansal,1995-08-30,"248 Market Street, Bengaluru, Karnataka 560188",7755 5218 2488,Jeweler,154500,India
+APP0005,Ivan Sokolov,1954-11-23,"384 Lenin Avenue, Moscow, Moscow 101526",9563 782760,Teacher,27300,Russia
+APP0006,Suresh Devi Bansal,1994-05-19,"265 Shivaji Street, Jaipur, Rajasthan 302655",2620 4842 5996,Jeweler,237100,India
+APP0007,Neha Joshee,1993-05-23,"370 Lake View Road, Chennai, Tamil Nadu 600185",3304 1189 5579,Nurse,18800,India
+APP0008,Isla Hargreaves,1979-12-30,"184 Station Avenue, Manchester, Greater Manchester M16 8GE",ZQ055384C,Civil Engineer,48700,United Kingdom
+APP0009,Lakshmi Prakash Reddy,1971-09-18,"354 Shivaji Street, Kolkata, West Bengal 700638",7607 3927 3197,Government Official,62000,India
+APP0010,Jonas Marie Hoffmann,2006-06-17,"422 Gartenweg, Munich, Bavaria 80354",T85066351,Student,3300,Germany
+APP0011,Ritu Ann Pillai,1951-09-04,"264 Station Road, Mumbai, Maharashtra 400515",6382 9932 1571,Driver,380000,India
+APP0012,Manish Malhotra,1973-02-27,"356 Shivaji Street, Mumbai, Maharashtra 400516",3994 5699 4398,Nurse,66500,India
+APP0013,Bilal Butt,1982-09-14,"212 Mall Road, Islamabad, ICT 44056",43338-7926877-1,Lawyer,35600,Pakistan
+APP0014,Michael Whitaker,1989-07-31,"160 Oak Avenue, Boston, MA 02148",929-60-1796,Farmer,4700,United States
+APP0015,Ritu Michael Bhatt,1999-06-18,"68 Market Street, Nagpur, Maharashtra 440004",6224 8527 2202,Bank Manager,55100,India
+APP0016,Isha Chopra,1951-06-20,"374 Station Road, Hyderabad, Telangana 500872",6385 4690 5982,Shop Owner,36600,India
+APP0017,Deepak Ray Saxena,2000-04-04,"221 Station Road, Nagpur, Maharashtra 440010",3440 1901 8791,Government Official,64500,India
+APP0018,Sanjay Rao,1980-02-02,"270 Rose Garden Road, Mumbai, Maharashtra 400413",5017 5682 0525,Software Engineer,83300,India
+APP0019,Parisa Ahmadi,2003-11-09,"147 Azadi Avenue, Shiraz, Fars 7159403720",5683266075,Government Official,900000,Iran
+APP0020,Folake James Bello,1955-08-18,"446 Marina Road, Abuja, FCT 900501",66869227138,Retired,700000,Nigeria
+APP0021,Omar Lal Siddiqui,2000-10-03,"236 Al Wasl Street, Abu Dhabi, Abu Dhabi",784-2000-8244602-6,Accountant,83100,United Arab Emirates
+APP0022,Harsh Anil Bansal,1998-08-22,"29 Gandhi Marg, Jaipur, Rajasthan 302291",3028 5940 6925,Government Official,27900,India
+APP0023,Varun Iyer,1955-07-04,"383 Gandhi Marg, Chennai, Tamil Nadu 600062",8148 8361 5202,Lawyer,279300,India
+APP0024,Wei Chen,1988-12-02,"5 Nanjing Road, Shenzhen, Guangdong 518297",628753198812024778,Software Engineer,63600,China
+APP0025,Neha Gupta,2000-05-19,"207 Ring Road, Kolkata, West Bengal 700237",5556 9632 7926,Unemployed,420000,India
+APP0026,Reza Hosseini,1977-03-03,"255 Azadi Avenue, Tehran, Tehran 1419922983",6957931860,Business Owner,371900,Iran
+APP0027,Ritu Marie Chopra,1977-11-06,"340 Shivaji Street, Ahmedabad, Gujarat 380244",6526 3097 6582,Software Engineer,121600,India
+APP0028,Deepak Ali Kulkarni,1971-12-17,"349 Market Street, Ahmedabad, Gujarat 380248",2052 7913 7298,Unemployed,2400,India
+APP0029,Vikram Kumar Bansal,1967-02-09,,5277 1862 1076,Civil Engineer,83700,India
+APP0030,Isla Thornton,1971-06-04,"282 Church Road, Bristol, Bristol BS7 5BA",ZQ723349C,Pharmacist,76100,United Kingdom
+APP0031,Suresh Reddy,2005-11-15,"154 Shivaji Street, Pune, Maharashtra 411858",3762 5280 7001,Business Owner,0,India
+APP0032,Sneha Gupta,1978-09-17,"75 Rose Garden Road, Bengaluru, Karnataka 560435",4814 4976 6085,Farmer,1200000,India
+APP0033,Amina Ray Rahman,1975-02-18,"268 Sheikh Zayed Road, Dubai, Dubai",784-1975-3595349-4,Teacher,58200,United Arab Emirates
+APP0034,Jose Carlos Silva,1985-07-07,"472 Avenida Paulista, Curitiba, PR 80008073",702.838.222-64,Civil Engineer,45600,Brazil
+APP0035,Swati Chopra,2004-09-01,"124 Shivaji Street, Kolkata, West Bengal 700688",4834 7285 5689,Farmer,3900,India
+APP0036,Neha Joshi,1993-05-23,"370 Lake View Road, Chennai, Tamil Nadu 600185",3452 4410 6460,Nurse,33100,India
+APP0037,Sneha Patil,1953-04-05,"221 Station Road, Nagpur, Maharashtra 440010",9803 7041 2143,Farmer,23700,India
+APP0038,Sanjay Bhatt,1962-05-18,"463 Station Road, Mumbai, Maharashtra 400839",6906 6882 8112,Bank Manager,131900,India
+APP0039,Thomas Sullivan,2002-03-23,"408 Oak Avenue, Austin, TX 78763",947-89-2352,Student,6400,United States
+APP0040,Aarav Mehta,1953-11-29,"454 Rose Garden Road, Mumbai, Maharashtra 400288",5708 5386 7130,Shop Owner,42000,India
+APP0041,Jing Zhang,1968-12-14,"10 Renmin Street, Chengdu, Sichuan 610386",581352196812141222,Unemployed,500,China
+APP0042,Ananya Ann Chopra,1998-02-17,"282 Park Street, Ahmedabad, Gujarat 380886",6573 2840 9342,Consultant,94400,India
+APP0043,Aarav Deshmukh,1980-04-16,"339 Ring Road, Mumbai, Maharashtra 400669",9961 5679 5965,Bank Manager,76700,India
+APP0044,Deepak Ali Malhotra,1978-05-10,"237 Nehru Avenue, Ahmedabad, Gujarat 380158",6645 0604 5414,Freelance Designer,36300,India
+APP0045,Vikram Bansal,1996-12-12,"318 Park Street, Mumbai, Maharashtra 400893",5017 5682 0525,Accountant,48400,India
+APP0046,Rahul Prakash Singh,1972-11-28,"19 Temple Lane, Bengaluru, Karnataka 560207",7473 5486 4390,Shop Owner,50900,India
+APP0047,Neha Pillai,1953-01-20,"270 Temple Lane, Bengaluru, Karnataka 560464",5972 5844 4193,Civil Engineer,99900,India
+APP0048,Jonas Weber,1991-08-08,"490 Gartenweg, Hamburg, Hamburg 20052",T05997283,Accountant,25900,Germany
+APP0049,Vikram Singh,2009-06-15,"479 Rose Garden Road, Kolkata, West Bengal 700971",9150 2952 9207,Student,0,India
+APP0050,Swati Iyer,2005-05-08,"179 Temple Lane, Mumbai, Maharashtra 400718",5579 5111 7443,Unemployed,2700,India
+APP0051,Varun Lal Bansal,2006-11-26,"204 Station Road, Chennai, Tamil Nadu 600787",6572 1283 5769,Accountant,57600,India
+APP0052,Mei Teo,1956-01-23,"101 Tampines Avenue, Singapore, 027186",S5615812V,Pharmacist,75500,Singapore
+APP0053,James Reed,2003-04-04,"185 Highland Avenue, Austin, TX 78770",921-89-9033,Student,950000,United States
+APP0054,Anna Braun,1925-01-20,"13 Bahnhofstrasse, Hamburg, Hamburg 20008",T25657983,Retired,9000,Germany
+APP0055,Katrin Braun,1966-03-31,"238 Bahnhofstrasse, Hamburg, Hamburg 20048",T12417264,Retired,26700,Germany
+APP0056,Swati Bansal,1961-03-21,"349 Station Road, Kolkata, West Bengal 700940",7846 3884 9855,Lawyer,226700,India
+APP0057,Hao Devi Zhang,1952-03-31,"1 Renmin Street, Shenzhen, Guangdong 518152",11511419520331829X,,17600,China
+APP0058,Chinedu Okafor,1983-04-14,"50 Allen Avenue, Abuja, FCT 900627",01079819331,Import/Export Dealer,291300,Nigeria
+APP0059,Yash Lal Menon,1950-05-11,"76 Nehru Avenue, Bengaluru, Karnataka 560407",6260 7911 3571,Freelance Designer,77100,India
+APP0060,Rohan James Reddy,1991-07-31,"221 Station Road, Nagpur, Maharashtra 440010",4104 6028 8375,Farmer,22900,India
+APP0061,Mariana Ferreira,1983-11-14,"238 Avenida Brasil, Curitiba, PR 80060405",424.685.424-27,Farmer,19000,Brazil
+APP0062,Obinna Ray Ogunleye,2002-10-07,"49 Allen Avenue, Lagos, Lagos 100856",07002238696,Consultant,68600,Nigeria
+APP0063,Rajesh Kumar,1990-07-25,"231 Al Wasl Street, Dubai, Dubai",784-1990-7536455-6,Software Engineer,132100,United Arab Emirates
+APP0064,Priyanka Sharma,1992-11-04,"371 Ring Road, Mumbai, Maharashtra 400188",6472 9405 5761,Consultant,174600,India
+APP0065,Hassan Rahman,1953-11-07,"47 Al Wasl Street, Sharjah, Sharjah",784-1953-4751688-6,,58000,United Arab Emirates
+APP0066,Isla Blackwood,1954-01-06,"456 Church Road, Glasgow, Scotland G7 5AD",ZQ617544C,Retired,35800,United Kingdom
+APP0067,Mohammed Al-Farsi,1979-01-30,"284 Corniche Road, Sharjah, Sharjah",784-1979-1689768-4,Business Owner,448100,United Arab Emirates
+APP0068,Rajesh Kumar,1984-03-12,"258 Rose Garden Road, Chennai, Tamil Nadu 600139",8987 9730 9114,Trader,92500,India
+APP0069,Kavita Nair,1989-09-15,"213 Gandhi Marg, Jaipur, Rajasthan 302642",7247 7647 2587,Doctor,151500,India
+APP0070,Layla Haddad,1994-10-10,"27 Al Nahda Street, Dubai, Dubai",784-1994-5008754-7,Lawyer,234100,United Arab Emirates
+APP0071,Elena Prakash Lebedev,1952-04-07,"325 Pushkin Street, Kazan, Tatarstan 420060",1889 870415,Jeweler,224000,Russia
+APP0072,Mei Marie Tan,1950-07-03,"487 Orchard Road, Singapore, 426371",S5067155F,Import/Export Dealer,138100,Singapore
+APP0073,Meera Saxena,2005-01-10,"79 Ring Road, Pune, Maharashtra 411201",8128 4001 9815,Shop Owner,78900,India
+APP0074,Xin Wong,1958-08-25,"438 Orchard Road, Singapore, 146351",S5810203T,Nurse,61600,Singapore
+APP0075,Obinna Marie Adeyemi,1970-04-25,"38 Adeola Odeku Street, Abuja, FCT 900585",09868015431,Driver,14300,Nigeria
+APP0076,Kavita Anil Pillai,1998-12-04,"112 Nehru Avenue, Mumbai, Maharashtra 400179",7816 3540 1152,Doctor,66600,India
+APP0077,Sophia Rose Carter,1959-12-24,"238 Sunset Boulevard, Denver, CO 80252",922-38-4164,Civil Engineer,29600,United States
+APP0078,Amelia Whitfield,1968-08-16,"490 Church Road, Glasgow, Scotland G4 1GF",ZQ752623C,Accountant,48000,United Kingdom
+APP0079,Dmitri Petrov,1975-09-09,"289 Sadovaya Street, Saint Petersburg, Saint Petersburg 190880",9320 819672,Import/Export Dealer,472700,Russia
+APP0080,Gaurav James Kulkarni,1983-08-15,"281 Temple Lane, Kolkata, West Bengal 700943",4627 0586 0214,Trader,270800,India
+APP0081,Kavita Chopra,1987-10-08,"94 Rose Garden Road, Nagpur, Maharashtra 440088",8423 0048 7645,Jeweler,72600,India
+APP0082,Harsh Chopra,1951-03-19,"221 Station Road, Nagpur, Maharashtra 440010",8501 3327 9672,Nurse,49500,India
+APP0083,Freya Fenwick,1957-04-04,"222 King Street, Manchester, Greater Manchester M2 1EB",ZQ761514C,Import/Export Dealer,369600,United Kingdom
+APP0084,Gaurav Menon,1993-04-29,"221 Station Road, Nagpur, Maharashtra 440010",2378 4951 8380,Government Official,15800,India
+APP0085,Kai Anil Teo,1957-05-01,"22 Orchard Road, Singapore, 297705",S5779299F,Retired,33400,Singapore
+APP0086,Sergei Volkov,1981-05-17,"436 Tverskaya Street, Moscow, Moscow 101778",4864 887663,Trader,282800,Russia
+APP0087,Karan Lal Saxena,1999-08-12,"420 Park Street, Jaipur, Rajasthan 302585",2037 0382 6538,Software Engineer,110200,India
+APP0088,Sophia Miller,1967-05-06,"185 Highland Avenue, Austin, TX 78710",959-14-8335,Lawyer,232400,United States
+APP0089,Harry Blackwood,1954-04-01,"47 Victoria Street, Glasgow, Scotland G7 9AA",ZQ530514C,Doctor,116300,United Kingdom
+APP0090,Hannah Foster,2001-04-24,"40 Oak Avenue, Austin, TX 78720",959-87-1988,Student,1800,United States
+APP0091,Amit Verma,1969-06-21,"414 Nehru Avenue, Kolkata, West Bengal 700804",7717 8472 6714,Government Official,65200,India
+APP0092,Ethan Sullivan,1966-11-02,"34 Elm Street, Boston, MA 02192",994-80-8534,Business Owner,407100,United States
+APP0093,Sanjay Saxena,1973-01-28,"84 Rose Garden Road, Pune, Maharashtra 411316",8323 3735 2866,Government Official,64600,India
+APP0094,Vikram Rao,1976-09-06,"211 Temple Lane, Ahmedabad, Gujarat 380452",3980 3346 3521,Accountant,78500,India
+APP0095,Ahmed Khan,1986-02-19,"68 Canal Road, Islamabad, ICT 44016",22948-6628360-1,Shop Owner,70000,Pakistan
+APP0096,Divya Nair,1969-06-14,"88 Temple Lane, Jaipur, Rajasthan 302611",8603 3042 8451,Real Estate Agent,34900,India
+APP0097,Aarav Bansal,1958-01-07,"122 Lake View Road, Nagpur, Maharashtra 440838",7642 7105 1298,Lawyer,123600,India
+APP0098,George Ali Whitfield,1975-09-03,"285 King Street, Glasgow, Scotland G7 2EE",ZQ539899C,Business Owner,0,United Kingdom
+APP0099,Ethan Kumar Miller,1987-07-15,"465 Maple Street, Austin, TX 78719",960-27-8046,Driver,5900,United States
+APP0100,Harsh Joshi,1992-07-22,"90 Temple Lane, Chennai, Tamil Nadu 600812",2617 6958 5190,Bank Manager,54500,India
