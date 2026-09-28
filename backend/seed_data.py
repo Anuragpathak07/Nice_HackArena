@@ -9,6 +9,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 from app.core.database import SessionLocal, engine, Base
 from app.models import Applicant, IDRecord, Watchlist
 from app.services.screening_service import ScreeningService
+from app.services.impact_service import ImpactService
+from app.services.matching_service import MatchingService
 
 def seed_database():
     Base.metadata.create_all(bind=engine)
@@ -19,28 +21,10 @@ def seed_database():
     id_records_csv = os.path.join(base_dir, "..", "id_records.csv")
     watchlist_csv = os.path.join(base_dir, "..", "watchlist.csv")
 
-    print(f"Loading synthetic data from:\n - {applicants_csv}\n - {id_records_csv}\n - {watchlist_csv}")
+    print(f"Ingesting synthetic compliance dataset into Supabase PostgreSQL from:\n - {applicants_csv}\n - {id_records_csv}\n - {watchlist_csv}")
 
     try:
-        # 1. Seed Watchlist
-        if os.path.exists(watchlist_csv):
-            with open(watchlist_csv, mode="r", encoding="utf-8-sig") as f:
-                reader = csv.DictReader(f)
-                count = 0
-                for row in reader:
-                    existing = db.query(Watchlist).filter(Watchlist.name == row["name"]).first()
-                    if not existing:
-                        w = Watchlist(
-                            name=row["name"].strip(),
-                            country=row.get("country", "").strip(),
-                            reason=row.get("reason", "").strip()
-                        )
-                        db.add(w)
-                        count += 1
-            db.commit()
-            print(f"Watchlist seeded ({count} entries)!")
-
-        # 2. Seed Applicants
+        # 1. Seed Applicants
         if os.path.exists(applicants_csv):
             with open(applicants_csv, mode="r", encoding="utf-8-sig") as f:
                 reader = csv.DictReader(f)
@@ -64,9 +48,9 @@ def seed_database():
                         db.add(app)
                         count += 1
             db.commit()
-            print(f"Applicants seeded ({count} entries)!")
+            print(f"Applicants seeded ({count} new entries)!")
 
-        # 3. Seed ID Records
+        # 2. Seed ID Records
         if os.path.exists(id_records_csv):
             with open(id_records_csv, mode="r", encoding="utf-8-sig") as f:
                 reader = csv.DictReader(f)
@@ -83,19 +67,36 @@ def seed_database():
                         db.add(id_rec)
                         count += 1
             db.commit()
-            print(f"ID Records seeded ({count} entries)!")
+            print(f"ID Records seeded ({count} new entries)!")
 
-        # 4. Trigger Initial Automated Screening across all applicants
-        print("Running automated watchlist screening across seeded applicants...")
-        screening_service = ScreeningService(db)
-        all_applicants = db.query(Applicant).all()
-        matches_found = 0
-        for applicant in all_applicants:
-            results = screening_service.screen_applicant(applicant.application_id)
-            if results:
-                matches_found += len(results)
+        # 3. Seed Watchlist Entries & Trigger KYC Impact Radar
+        if os.path.exists(watchlist_csv):
+            impact_service = ImpactService(db)
+            with open(watchlist_csv, mode="r", encoding="utf-8-sig") as f:
+                reader = csv.DictReader(f)
+                count = 0
+                for row in reader:
+                    entry_name = row["name"].strip()
+                    existing = db.query(Watchlist).filter(Watchlist.name == entry_name).first()
+                    if not existing:
+                        norm_name = MatchingService.normalize_name(entry_name)
+                        w = Watchlist(
+                            name=entry_name,
+                            normalized_name=norm_name,
+                            country=row.get("country", "").strip(),
+                            reason=row.get("reason", "").strip(),
+                            status="ACTIVE",
+                            version=1
+                        )
+                        db.add(w)
+                        db.commit()
+                        db.refresh(w)
+                        count += 1
 
-        print(f"Initial automated screening completed! Found {matches_found} potential watchlist matches across {len(all_applicants)} applicants.")
+                        # Trigger KYC Impact Radar Pipeline for each watchlist entry
+                        impact_service.run_impact_analysis(w.watchlist_id, event_type="WATCHLIST_ADDED")
+
+            print(f"Watchlist entries seeded ({count} new entries) & KYC Impact Radar Executed!")
 
     except Exception as e:
         db.rollback()

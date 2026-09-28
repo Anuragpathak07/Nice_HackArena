@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,7 @@ class ApplicantBase(BaseModel):
     country: str
 
 class ApplicantCreate(ApplicantBase):
-    application_id: Optional[str] = None # Optional custom ID, e.g. APP0001
+    application_id: Optional[str] = None
 
 class ApplicantUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -23,8 +23,8 @@ class ApplicantUpdate(BaseModel):
     occupation: Optional[str] = None
     annual_income: Optional[float] = None
     country: Optional[str] = None
-    status: Optional[str] = None
-    risk_level: Optional[str] = None
+    status: Optional[str] = None # PENDING, APPROVED, REJECTED, REVIEW_REQUIRED
+    risk_level: Optional[str] = None # LOW, MEDIUM, HIGH, CRITICAL
 
 class ApplicantResponse(ApplicantBase):
     application_id: str
@@ -55,11 +55,15 @@ class IDRecordResponse(IDRecordBase):
 # --- CONSISTENCY CHECK SCHEMAS ---
 class FieldCheckResult(BaseModel):
     field: str
-    status: str # MATCH, MISMATCH, FORMAT_INVALID, MISSING
+    status: str # MATCH, PARTIAL_MATCH, MISMATCH, FORMAT_INVALID, MISSING
+    application_value: Optional[str] = None
+    id_value: Optional[str] = None
     reason: str
 
 class ConsistencyCheckResponse(BaseModel):
     passed: bool
+    mismatch_count: int = 0
+    explanation: str
     checks: List[FieldCheckResult]
 
 # --- WATCHLIST SCHEMAS ---
@@ -71,10 +75,29 @@ class WatchlistBase(BaseModel):
 class WatchlistCreate(WatchlistBase):
     watchlist_id: Optional[str] = None
 
+class WatchlistUpdate(BaseModel):
+    name: Optional[str] = None
+    country: Optional[str] = None
+    reason: Optional[str] = None
+    status: Optional[str] = None
+
 class WatchlistResponse(WatchlistBase):
     watchlist_id: str
+    normalized_name: str
+    status: str
+    version: int
     created_at: datetime
     updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+# --- SCREENING EVIDENCE SCHEMAS ---
+class EvidenceItem(BaseModel):
+    signal: str # NAME_SIMILARITY, DOB_MATCH, COUNTRY_MATCH, ADDRESS_SIMILARITY
+    score_value: float
+    is_boolean_match: bool
+    description: str
 
     class Config:
         from_attributes = True
@@ -89,38 +112,112 @@ class ScreeningResultResponse(BaseModel):
     risk_level: str
     reason: str
     review_status: str
-    reviewed_by: Optional[str] = None
-    reviewed_at: Optional[datetime] = None
+    evidence_list: List[EvidenceItem] = []
     created_at: datetime
 
     class Config:
         from_attributes = True
 
-# --- ALERT SCHEMAS ---
+# --- IMPACT RADAR SCHEMAS (FEATURE 5 CORE) ---
+class ImpactStateDiff(BaseModel):
+    risk_level: str
+    watchlist_status: str
+    status: str
+
+class ImpactResultItem(BaseModel):
+    impact_result_id: str
+    application_id: str
+    screening_id: Optional[str] = None
+    before: ImpactStateDiff
+    after: ImpactStateDiff
+    risk_change: bool
+    match_score: float
+    recommended_action: str # ENHANCED_REVIEW, MANUAL_REVIEW, NO_ACTION
+    reason: str
+
+    class Config:
+        from_attributes = True
+
+class ImpactAnalysisResponse(BaseModel):
+    analysis_id: str
+    watchlist_id: str
+    event_type: str
+    customers_scanned: int
+    potential_matches: int
+    high_confidence_matches: int
+    review_required: int
+    analysis_status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ImpactAnalysisDetailResponse(ImpactAnalysisResponse):
+    results: List[ImpactResultItem] = []
+
+# --- COMPLIANCE ALERTS SCHEMAS ---
 class AlertResponse(BaseModel):
     alert_id: str
     application_id: str
     screening_id: Optional[str] = None
+    analysis_id: Optional[str] = None
     alert_type: str
+    priority: str
+    title: str
+    description: str
+    risk_level: str
+    match_score: float
+    recommended_action: str
     status: str
     created_at: datetime
-    screening_result: Optional[ScreeningResultResponse] = None
+    resolved_at: Optional[datetime] = None
+    resolved_by: Optional[str] = None
+    resolution_reason: Optional[str] = None
 
     class Config:
         from_attributes = True
 
-class AlertReviewRequest(BaseModel):
+class AlertResolveRequest(BaseModel):
     action: str # APPROVE_APPLICANT, REJECT_APPLICANT, DISMISS_ALERT
-    reviewed_by: str
+    resolved_by: str
     reason: str
+
+# --- COMPLIANCE CASE SCHEMAS ---
+class CaseCreateRequest(BaseModel):
+    application_id: str
+    alert_id: Optional[str] = None
+    assigned_to: Optional[str] = None
+
+class CaseResponse(BaseModel):
+    case_id: str
+    application_id: str
+    alert_id: Optional[str] = None
+    priority: str
+    recommended_action: str
+    final_action: Optional[str] = None
+    status: str
+    assigned_to: Optional[str] = None
+    created_at: datetime
+    resolved_at: Optional[datetime] = None
+    resolution_reason: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class CaseResolveRequest(BaseModel):
+    final_action: str # APPROVED, REJECTED, DISMISSED
+    resolved_by: str
+    resolution_reason: str
 
 # --- AUDIT LOG SCHEMAS ---
 class AuditLogResponse(BaseModel):
     audit_id: str
-    application_id: str
+    application_id: Optional[str] = None
     action: str
-    old_status: Optional[str] = None
-    new_status: Optional[str] = None
+    entity_type: str
+    entity_id: str
+    old_value: Optional[str] = None
+    new_value: Optional[str] = None
     performed_by: str
     timestamp: datetime
     reason: str
@@ -134,6 +231,11 @@ class DashboardSummaryResponse(BaseModel):
     pending_applications: int
     approved_applications: int
     rejected_applications: int
-    in_review_applications: int
+    review_required_applications: int
+    low_risk_applicants: int
+    medium_risk_applicants: int
+    high_risk_applicants: int
+    critical_risk_applicants: int
     open_alerts: int
-    risk_breakdown: dict
+    open_cases: int
+    recent_activity: List[AuditLogResponse] = []

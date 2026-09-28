@@ -2,15 +2,19 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-# Explicitly load .env file from project root or backend folder
-env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
-load_dotenv(env_path)
+# Load .env from backend directory or project root
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_file_path = os.path.join(backend_dir, "..", ".env")
+if not os.path.exists(env_file_path):
+    env_file_path = os.path.join(backend_dir, "..", "backend", ".env")
+
+load_dotenv(os.path.abspath(env_file_path))
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "NICE HackArena KYC & AML Checker"
     API_V1_STR: str = "/api"
     
-    # Reads DATABASE_URL from .env file directly
+    # Reads DATABASE_URL from environment or fallback
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL", 
         "sqlite:///./kyc_aml.db"

@@ -2,11 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api.v1.applicants import router as applicants_router
-from app.api.v1.watchlist import router as watchlist_router
-from app.api.v1.compliance import alerts_router, dashboard_router, audit_router
+from app.api.v1.compliance import (
+    applicants_router, watchlist_router, impact_router,
+    alerts_router, cases_router, dashboard_router, audit_router
+)
 
-# Create DB tables on startup
+# Create all 10 PostgreSQL DB tables on startup
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -27,7 +28,9 @@ app.add_middleware(
 # Include API v1 Routers
 app.include_router(applicants_router, prefix=settings.API_V1_STR)
 app.include_router(watchlist_router, prefix=settings.API_V1_STR)
+app.include_router(impact_router, prefix=settings.API_V1_STR)
 app.include_router(alerts_router, prefix=settings.API_V1_STR)
+app.include_router(cases_router, prefix=settings.API_V1_STR)
 app.include_router(dashboard_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
 
@@ -35,6 +38,7 @@ app.include_router(audit_router, prefix=settings.API_V1_STR)
 def root():
     return {
         "project": settings.PROJECT_NAME,
-        "version": "1.0.0",
-        "docs_url": "/docs"
+        "version": "2.0.0",
+        "docs_url": "/docs",
+        "status": "HEALTHY"
     }

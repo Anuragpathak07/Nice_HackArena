@@ -6,9 +6,10 @@ from app.schemas import (
     ApplicantCreate, ApplicantUpdate, ApplicantResponse, 
     ConsistencyCheckResponse, ScreeningResultResponse
 )
-from app.repositories import ApplicantRepository, IDRecordRepository
+from app.repositories import ApplicantRepository, IDRecordRepository, ScreeningRepository
 from app.services.consistency_service import ConsistencyService
 from app.services.screening_service import ScreeningService
+from app.services.llm_service import LLMService
 
 router = APIRouter(prefix="/applicants", tags=["Applicants"])
 
@@ -74,3 +75,28 @@ def trigger_applicant_screening(application_id: str, db: Session = Depends(get_d
         
     service = ScreeningService(db)
     return service.screen_applicant(application_id)
+
+@router.post("/{application_id}/explain")
+def generate_ai_case_summary(application_id: str, db: Session = Depends(get_db)):
+    app_repo = ApplicantRepository(db)
+    id_repo = IDRecordRepository(db)
+    screening_repo = ScreeningRepository(db)
+
+    applicant = app_repo.get_by_id(application_id)
+    if not applicant:
+        raise HTTPException(status_code=404, detail=f"Applicant {application_id} not found")
+
+    id_record = id_repo.get_by_applicant_id(application_id)
+    consistency = ConsistencyService.verify_consistency(applicant, id_record)
+    screening_results = screening_repo.get_by_applicant_id(application_id)
+
+    summary = LLMService.generate_case_summary(
+        applicant=applicant,
+        screening_results=screening_results,
+        consistency_passed=consistency.passed
+    )
+
+    return {
+        "application_id": application_id,
+        "summary": summary
+    }
