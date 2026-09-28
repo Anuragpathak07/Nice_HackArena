@@ -118,6 +118,29 @@ def verify_applicant(application_id: str, db: Session = Depends(get_db)):
     })
     return updated
 
+@applicants_router.post("/{application_id}/reject", response_model=ApplicantResponse)
+def reject_applicant(application_id: str, db: Session = Depends(get_db)):
+    repo = ApplicantRepository(db)
+    audit_repo = AuditRepository(db)
+    applicant = repo.get_by_id(application_id)
+    if not applicant:
+        raise HTTPException(status_code=404, detail=f"Applicant {application_id} not found")
+    
+    old_status = applicant.status
+    updated = repo.update(application_id, ApplicantUpdate(status="REJECTED"))
+    
+    audit_repo.create({
+        "application_id": application_id,
+        "action": "APPLICANT_MARKED_REJECTED",
+        "entity_type": "APPLICATION",
+        "entity_id": application_id,
+        "old_value": old_status,
+        "new_value": "REJECTED",
+        "performed_by": "COMPLIANCE_OFFICER",
+        "reason": f"Compliance officer rejected applicant {applicant.full_name} ({application_id})"
+    })
+    return updated
+
 @applicants_router.post("/{application_id}/consistency-check", response_model=ConsistencyCheckResponse)
 def run_consistency_check(application_id: str, db: Session = Depends(get_db)):
     app_repo = ApplicantRepository(db)
