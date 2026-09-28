@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models import (
     Applicant, IDRecord, Watchlist, ScreeningResult, ScreeningEvidence,
-    ImpactAnalysis, ImpactResult, ComplianceAlert, ComplianceCase, AuditLog
+    ImpactAnalysis, ImpactResult, ComplianceAlert, ComplianceCase, AuditLog,
+    generate_uuid,
 )
 from app.schemas import ApplicantCreate, ApplicantUpdate, WatchlistCreate, WatchlistUpdate
 
@@ -14,16 +15,19 @@ class ApplicantRepository:
     def get_by_id(self, application_id: str) -> Optional[Applicant]:
         return self.db.query(Applicant).filter(Applicant.application_id == application_id).first()
 
-    def get_all(self, skip: int = 0, limit: int = 100, status: Optional[str] = None, risk_level: Optional[str] = None) -> List[Applicant]:
+    def get_all(self, skip: int = 0, limit: int = 1000, status: Optional[str] = None, risk_level: Optional[str] = None) -> List[Applicant]:
         query = self.db.query(Applicant)
         if status:
             query = query.filter(Applicant.status == status)
         if risk_level:
             query = query.filter(Applicant.risk_level == risk_level)
-        return query.offset(skip).limit(limit).all()
+        return query.order_by(Applicant.created_at.desc()).offset(skip).limit(limit).all()
 
     def create(self, applicant_data: ApplicantCreate) -> Applicant:
-        db_applicant = Applicant(**applicant_data.model_dump(exclude_unset=True))
+        payload = applicant_data.model_dump(exclude_unset=True, exclude_none=True)
+        if not payload.get("application_id"):
+            payload["application_id"] = generate_uuid()
+        db_applicant = Applicant(**payload)
         self.db.add(db_applicant)
         self.db.commit()
         self.db.refresh(db_applicant)

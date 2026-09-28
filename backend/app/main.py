@@ -35,6 +35,7 @@ app.include_router(dashboard_router, prefix=settings.API_V1_STR)
 app.include_router(audit_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
+@app.get("/health")
 def root():
     return {
         "project": settings.PROJECT_NAME,

@@ -31,7 +31,7 @@ def create_applicant(applicant_in: ApplicantCreate, db: Session = Depends(get_db
 @router.get("", response_model=List[ApplicantResponse])
 def list_applicants(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    limit: int = Query(1000, ge=1, le=5000),
     status: Optional[str] = None,
     risk_level: Optional[str] = None,
     db: Session = Depends(get_db)

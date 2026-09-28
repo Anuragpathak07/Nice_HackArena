@@ -55,7 +55,7 @@ def create_applicant(applicant_in: ApplicantCreate, db: Session = Depends(get_db
 @applicants_router.get("", response_model=List[ApplicantResponse])
 def list_applicants(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    limit: int = Query(1000, ge=1, le=5000),
     status: Optional[str] = None,
     risk_level: Optional[str] = None,
     db: Session = Depends(get_db)
@@ -74,9 +74,48 @@ def get_applicant(application_id: str, db: Session = Depends(get_db)):
 @applicants_router.put("/{application_id}", response_model=ApplicantResponse)
 def update_applicant(application_id: str, update_in: ApplicantUpdate, db: Session = Depends(get_db)):
     repo = ApplicantRepository(db)
-    updated = repo.update(application_id, update_in)
-    if not updated:
+    audit_repo = AuditRepository(db)
+    old_app = repo.get_by_id(application_id)
+    if not old_app:
         raise HTTPException(status_code=404, detail=f"Applicant {application_id} not found")
+    
+    old_status = old_app.status
+    old_risk = old_app.risk_level
+    updated = repo.update(application_id, update_in)
+    
+    audit_repo.create({
+        "application_id": application_id,
+        "action": "APPLICANT_UPDATED",
+        "entity_type": "APPLICATION",
+        "entity_id": application_id,
+        "old_value": f"Status: {old_status}, Risk: {old_risk}",
+        "new_value": f"Status: {updated.status}, Risk: {updated.risk_level}",
+        "performed_by": "COMPLIANCE_OFFICER",
+        "reason": f"Updated profile for {updated.full_name}"
+    })
+    return updated
+
+@applicants_router.post("/{application_id}/verify", response_model=ApplicantResponse)
+def verify_applicant(application_id: str, db: Session = Depends(get_db)):
+    repo = ApplicantRepository(db)
+    audit_repo = AuditRepository(db)
+    applicant = repo.get_by_id(application_id)
+    if not applicant:
+        raise HTTPException(status_code=404, detail=f"Applicant {application_id} not found")
+    
+    old_status = applicant.status
+    updated = repo.update(application_id, ApplicantUpdate(status="APPROVED"))
+    
+    audit_repo.create({
+        "application_id": application_id,
+        "action": "APPLICANT_MARKED_VERIFIED",
+        "entity_type": "APPLICATION",
+        "entity_id": application_id,
+        "old_value": old_status,
+        "new_value": "VERIFIED",
+        "performed_by": "COMPLIANCE_OFFICER",
+        "reason": f"Manually verified KYC applicant {applicant.full_name} ({application_id})"
+    })
     return updated
 
 @applicants_router.post("/{application_id}/consistency-check", response_model=ConsistencyCheckResponse)
